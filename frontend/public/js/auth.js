@@ -184,6 +184,35 @@
     }
     document.querySelectorAll('[data-auth="in"]').forEach((el) => setVisible(el, auth.signedIn));
     document.querySelectorAll('[data-auth="out"]').forEach((el) => setVisible(el, !auth.signedIn));
+
+    // settings page account card (slot rendered by the Settings page)
+    const account = document.getElementById('account-slot');
+    if (account) {
+      if (auth.signedIn) {
+        const email = (auth.user && auth.user.email) || '';
+        const initial = (email[0] || '?').toUpperCase();
+        const color = CB.avatarColor ? CB.avatarColor(email) : '#1a73e8';
+        account.innerHTML =
+          '<div class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3.5">' +
+          '<div class="flex items-center gap-3">' +
+          `<span class="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-bold text-white" style="background:${color}">${CB.esc(initial)}</span>` +
+          '<div class="min-w-0 flex-1">' +
+          `<p class="truncate text-sm font-semibold">${CB.esc(email)}</p>` +
+          '<p class="text-[12px] leading-relaxed text-ink-dim">Signed in - contacts you add are private to this account</p>' +
+          '</div></div>' +
+          '<button class="btn mt-3 w-full justify-center" type="button" data-signout>Sign out</button>' +
+          '</div>';
+      } else {
+        account.innerHTML =
+          '<div class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3.5">' +
+          '<p class="text-sm font-semibold">Browsing as a guest</p>' +
+          '<p class="mt-1 text-[12px] leading-relaxed text-ink-dim">Create an account and your contacts stay private to you.</p>' +
+          '<div class="mt-3 flex gap-2">' +
+          '<a href="/signup" class="btn btn-primary flex-1 justify-center">Create account</a>' +
+          '<a href="/login" class="btn flex-1 justify-center">Sign in</a>' +
+          '</div></div>';
+      }
+    }
   }
 
   /* ------------------------------------------------------------ auth forms */
