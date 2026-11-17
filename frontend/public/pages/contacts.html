@@ -1,0 +1,42 @@
+<section id="panel-contacts" aria-label="Contacts">
+  <section class="mt-4 grid grid-cols-3 gap-2.5 sm:gap-3" aria-label="Contact statistics">
+    <div class="glass rounded-xl px-3.5 py-3">
+      <p id="stat-total" class="font-display text-lg font-bold sm:text-xl">-</p>
+      <p class="mt-0.5 text-xs text-ink-dim">Contacts</p>
+    </div>
+    <div class="glass rounded-xl px-3.5 py-3">
+      <p id="stat-email" class="font-display text-lg font-bold sm:text-xl">-</p>
+      <p class="mt-0.5 text-xs text-ink-dim">With email</p>
+    </div>
+    <div class="glass rounded-xl px-3.5 py-3">
+      <p id="stat-recent" class="font-display text-lg font-bold sm:text-xl">-</p>
+      <p class="mt-0.5 text-xs text-ink-dim">New (7d)</p>
+    </div>
+  </section>
+
+  <div class="mt-5">
+    <h1 class="font-display text-base font-bold tracking-tight sm:text-xl">Contacts</h1>
+    <p id="result-hint" class="mt-0.5 text-[13px] text-ink-dim">Loading your book...</p>
+  </div>
+
+  <div id="loading" class="mt-4 hidden grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3 xl:grid-cols-4">
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+  </div>
+
+  <main id="contact-grid" class="mt-4 hidden grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3 lg:gap-4 xl:grid-cols-4 [perspective:1200px]" aria-live="polite"></main>
+
+  <div id="empty-state" class="glass mt-4 hidden rounded-2xl px-6 py-10 text-center">
+    <div class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-white/10 bg-white/5 text-brand-2">
+      <svg class="h-7 w-7"><use href="#i-users"></use></svg>
+    </div>
+    <h2 id="empty-title" class="font-display mt-4 text-base font-bold">No contacts yet</h2>
+    <p id="empty-text" class="mx-auto mt-1.5 max-w-md text-sm text-ink-dim">Add your first contact to start your book.</p>
+    <button id="empty-action" class="btn btn-primary mt-5">
+      <svg class="h-4 w-4"><use href="#i-plus"></use></svg>
+      Add contact
+    </button>
+  </div>
+</section>

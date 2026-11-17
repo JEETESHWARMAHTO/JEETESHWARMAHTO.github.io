@@ -1,0 +1,46 @@
+<header class="glass sticky top-3 z-40 rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-3 sm:gap-5">
+  <a href="/" class="flex shrink-0 items-center gap-2.5" aria-label="Contact Book home">
+    <svg class="h-9 w-9 shrink-0" aria-hidden="true"><use href="#logo-mark"></use></svg>
+    <span class="hidden leading-tight sm:block">
+      <span class="block font-display text-[15px] font-bold tracking-tight">Contact Book</span>
+      <span class="block text-[11px] text-ink-dim">Personal contacts, beautifully kept</span>
+    </span>
+  </a>
+
+  <nav class="tabs mx-auto" aria-label="Sections">
+    <a class="tab {{active:contacts}}" data-tab="contacts" href="/" {{current:contacts}}>
+      <svg class="h-4 w-4" aria-hidden="true"><use href="#i-book"></use></svg>
+      Contacts
+    </a>
+    <a class="tab {{active:favorites}}" data-tab="favorites" href="/favorites" {{current:favorites}}>
+      <svg class="h-4 w-4" aria-hidden="true"><use href="#i-star"></use></svg>
+      Favorites
+    </a>
+    <a class="tab {{active:groups}}" data-tab="groups" href="/groups" {{current:groups}}>
+      <svg class="h-4 w-4" aria-hidden="true"><use href="#i-grid"></use></svg>
+      Groups
+    </a>
+    <a class="tab {{active:settings}}" data-tab="settings" href="/settings" {{current:settings}}>
+      <svg class="h-4 w-4" aria-hidden="true"><use href="#i-gear"></use></svg>
+      Settings
+    </a>
+  </nav>
+
+  <div id="search-shell" class="search-shell ml-auto md:ml-0">
+    <button id="search-toggle" class="search-toggle" type="button" aria-label="Search contacts" aria-expanded="false">
+      <svg class="h-4 w-4" aria-hidden="true"><use href="#i-search"></use></svg>
+    </button>
+    <input id="search-input" class="search-field" type="search" placeholder="Search all contacts..." autocomplete="off" aria-label="Search contacts" />
+    <button id="search-clear" class="search-clear" type="button" aria-label="Clear search">
+      <svg class="h-3 w-3" aria-hidden="true"><use href="#i-x"></use></svg>
+    </button>
+  </div>
+</header>
+
+<div id="api-banner" class="hidden mt-4 items-start gap-3 rounded-2xl border border-amber-300/30 bg-amber-400/10 px-4 py-3 backdrop-blur-md">
+  <span class="mt-0.5 text-amber-300"><svg class="h-4 w-4"><use href="#i-alert"></use></svg></span>
+  <div class="text-sm text-amber-100">
+    <p class="font-semibold">Python API offline</p>
+    <p id="api-banner-text" class="text-amber-100/80 text-[13px]">Start it with <code class="rounded bg-black/30 px-1.5 py-0.5">python -m uvicorn app:app --reload --port 8000</code></p>
+  </div>
+</div>

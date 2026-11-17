@@ -1,0 +1,54 @@
+<section id="panel-settings" class="mt-5" aria-label="Settings">
+  <div class="glass mx-auto max-w-xl rounded-2xl p-4 sm:p-5">
+    <div class="flex items-center gap-3">
+      <h2 class="font-display text-base font-bold">Settings</h2>
+      <span class="badge-so">Phase 2</span>
+    </div>
+    <p class="mt-1 text-sm leading-relaxed text-ink-dim">
+      Account, sync and storage. Everything below is designed and wired for
+      the Google connector - it activates as soon as the OAuth client is added.
+    </p>
+
+    <div class="mt-4 space-y-2.5">
+      <div class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3.5">
+        <div class="flex items-center gap-3">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.06]">
+            <svg class="h-[18px] w-[18px]" aria-hidden="true"><use href="#i-google"></use></svg>
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-semibold">Google account</p>
+            <p class="text-[12px] leading-relaxed text-ink-dim">Sign in once to import your Google Contacts</p>
+          </div>
+          <span id="google-badge" class="badge-so">Soon</span>
+        </div>
+        <button id="google-signin" class="btn mt-3 w-full justify-center gap-2.5" type="button">
+          <svg class="h-[18px] w-[18px]" aria-hidden="true"><use href="#i-google"></use></svg>
+          Sign in with Google
+        </button>
+        <div id="google-account-state" class="mt-3 hidden items-center gap-2.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-[12px] text-ink-dim"></div>
+      </div>
+
+      <div class="flex items-center gap-3.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.05] text-ink-dim">
+          <svg class="h-5 w-5" aria-hidden="true"><use href="#i-sync"></use></svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold">Auto-sync</p>
+          <p class="text-[12px] leading-relaxed text-ink-dim">Keeps contacts identical across all your devices</p>
+        </div>
+        <span class="toggle-off" aria-hidden="true"><span class="knob"></span></span>
+      </div>
+
+      <div class="flex items-center gap-3.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.05] text-ink-dim">
+          <svg class="h-5 w-5" aria-hidden="true"><use href="#i-database"></use></svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold">Storage</p>
+          <p id="storage-value" class="text-[12px] leading-relaxed text-ink-dim">Checking...</p>
+        </div>
+        <span class="badge-so badge-now">Now</span>
+      </div>
+    </div>
+  </div>
+</section>

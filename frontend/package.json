@@ -1,0 +1,16 @@
+{
+  "name": "contact-book-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Glassmorphism + 3D animated UI for the Personal Contact Book (Node.js server, Tailwind CSS, vanilla JS)",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "css": "tailwindcss -i ./src/input.css -o ./public/css/styles.css --watch",
+    "css:build": "tailwindcss -i ./src/input.css -o ./public/css/styles.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

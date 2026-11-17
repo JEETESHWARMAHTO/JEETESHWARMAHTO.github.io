@@ -1,0 +1,109 @@
+<!-- add / edit popup -->
+<div id="form-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="form-title">
+  <div class="modal-panel glass-strong my-auto max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl p-4 sm:p-5">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h2 id="form-title" class="font-display text-lg font-bold">New contact</h2>
+        <p class="text-sm text-ink-dim">Only the name is required.</p>
+      </div>
+      <button class="icon-btn" data-close="form" aria-label="Close">
+        <svg class="h-4 w-4"><use href="#i-x"></use></svg>
+      </button>
+    </div>
+
+    <form id="contact-form" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2" novalidate>
+      <div class="flex items-center gap-4 sm:col-span-2">
+        <div id="form-avatar" class="avatar-preview" aria-hidden="true">?</div>
+        <div class="flex min-w-0 flex-col items-start gap-1.5">
+          <div class="flex items-center gap-3">
+            <button type="button" id="avatar-pick" class="btn gap-2 px-4 py-2 text-[13px]">
+              <svg class="h-4 w-4" aria-hidden="true"><use href="#i-image"></use></svg>
+              Add photo
+            </button>
+            <button type="button" id="avatar-clear" class="text-btn hidden">Remove photo</button>
+          </div>
+          <p class="hint">JPG or PNG - square works best</p>
+        </div>
+        <input type="file" id="avatar-file" accept="image/*" class="hidden" tabindex="-1" aria-hidden="true" />
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="label" for="f-name">Name *</label>
+        <input class="input" id="f-name" name="name" maxlength="120" required placeholder="e.g. Aarav Sharma" />
+      </div>
+      <div>
+        <label class="label" for="f-phone">Phone</label>
+        <input class="input" id="f-phone" name="phone" maxlength="40" inputmode="tel" placeholder="+91 98765 43210" />
+      </div>
+      <div>
+        <label class="label" for="f-email">Email</label>
+        <input class="input" id="f-email" name="email" type="email" maxlength="120" placeholder="name@example.com" />
+      </div>
+      <div>
+        <label class="label" for="f-company">Company</label>
+        <input class="input" id="f-company" name="company" maxlength="120" placeholder="Where they work" />
+      </div>
+      <div>
+        <label class="label" for="f-address">Address</label>
+        <input class="input" id="f-address" name="address" maxlength="240" placeholder="City, country" />
+      </div>
+      <div class="sm:col-span-2">
+        <label class="label" for="f-notes">Notes</label>
+        <textarea class="input resize-none" id="f-notes" name="notes" rows="3" maxlength="1000" placeholder="How you met, preferences..."></textarea>
+      </div>
+
+      <div class="mt-1 flex flex-col-reverse gap-2.5 sm:col-span-2 sm:flex-row sm:justify-end">
+        <button type="button" class="btn" data-close="form">Cancel</button>
+        <button type="submit" id="form-submit" class="btn btn-primary">Add contact</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- contact detail popup -->
+<div id="detail-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="detail-name">
+  <div class="modal-panel glass-strong my-auto w-full max-w-lg overflow-hidden rounded-2xl">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#1a73e8]/15 to-transparent"></div>
+      <div class="relative flex items-start gap-4 p-4 sm:p-5">
+        <div id="detail-avatar" class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-white/10 text-xl font-bold text-white"></div>
+        <div class="min-w-0 flex-1">
+          <h2 id="detail-name" class="font-display truncate text-lg font-bold sm:text-xl">-</h2>
+          <p id="detail-company" class="truncate text-sm text-ink-dim">-</p>
+        </div>
+        <button class="icon-btn" data-close="detail" aria-label="Close">
+          <svg class="h-4 w-4"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="detail-body" class="space-y-2.5 p-4 sm:p-5"></div>
+
+    <div class="flex flex-wrap gap-2 px-4 pb-4 sm:px-5 sm:pb-5">
+      <button id="detail-edit" class="btn flex-1">
+        <svg class="h-4 w-4"><use href="#i-pencil"></use></svg>
+        Edit
+      </button>
+      <button id="detail-delete" class="btn btn-danger flex-1">
+        <svg class="h-4 w-4"><use href="#i-trash"></use></svg>
+        Delete
+      </button>
+      <button class="btn" data-close="detail">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- delete confirmation -->
+<div id="confirm-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="modal-panel glass-strong my-auto w-full max-w-sm rounded-2xl p-5 text-center">
+    <div class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger/15 text-danger">
+      <svg class="h-6 w-6"><use href="#i-alert"></use></svg>
+    </div>
+    <h2 id="confirm-title" class="font-display mt-4 text-base font-bold">Delete contact?</h2>
+    <p id="confirm-message" class="mt-1.5 text-sm text-ink-dim">This can't be undone.</p>
+    <div class="mt-4 flex gap-2.5">
+      <button id="confirm-no" class="btn flex-1">Cancel</button>
+      <button id="confirm-yes" class="btn btn-danger flex-1">Delete</button>
+    </div>
+  </div>
+</div>
