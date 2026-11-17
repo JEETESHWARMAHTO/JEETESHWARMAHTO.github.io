@@ -58,6 +58,7 @@ try {
     close() {}
   };
   sessionStorage.setItem('cb-intro', '1');
+  localStorage.setItem('cb-seen-welcome', '1');
 } catch (err) {}
 """
 
@@ -76,7 +77,7 @@ EMOJI_RANGES = (
 
 
 # --------------------------------------------------------------------- HTTP
-def http(method, path, payload=None, *, retries=4, base_url=BASE_URL):
+def http(method, path, payload=None, *, retries=4, base_url=BASE_URL, headers=None):
     """Issue an HTTP request, retrying transient 5xx / connection failures.
 
     Returns ``(status, body)`` where ``body`` is parsed JSON when possible and
@@ -84,12 +85,14 @@ def http(method, path, payload=None, *, retries=4, base_url=BASE_URL):
     """
     url = path if path.startswith("http") else base_url + path
     data = json.dumps(payload).encode("utf-8") if payload is not None else None
-    headers = {"Content-Type": "application/json"} if data is not None else {}
+    req_headers = {"Content-Type": "application/json"} if data is not None else {}
+    if headers:
+        req_headers.update(headers)
     last = None
 
     for attempt in range(retries):
         try:
-            req = urllib.request.Request(url, data=data, headers=headers, method=method)
+            req = urllib.request.Request(url, data=data, headers=req_headers, method=method)
             with urllib.request.urlopen(req, timeout=25) as res:
                 raw = res.read()
                 return res.status, _decode(raw)
@@ -265,7 +268,7 @@ def ready_heading(page, label, timeout=15000):
         """(label) => [...document.querySelectorAll('h1, h2, h3')]
              .some(h => (h.textContent || '').trim().toLowerCase()
                  .includes(label.toLowerCase()))""",
-        label,
+        arg=label,
         timeout=timeout,
     )
 
@@ -386,6 +389,7 @@ def wait_for_toast(page, timeout=10000):
            }""",
         timeout=timeout,
     )
+    return page.locator("#toast-root").inner_text().strip()
 
 
 def modal_open(page, selector):
@@ -395,13 +399,23 @@ def modal_open(page, selector):
 
 
 def wait_modal(page, selector, *, opened=True, timeout=10000):
+    """Wait for a popup to be (or stop being) open *and* actually rendered.
+
+    The overlay switches on the ``open`` class first and animates opacity /
+    visibility over ~0.28s, so the class alone is not enough: right after the
+    class flips the popup is still ``visibility:hidden`` (is_visible() is
+    false and inner_text() reads empty).
+    """
     page.wait_for_function(
         """([selector, opened]) => {
              const el = document.querySelector(selector);
              return !!el && el.classList.contains('open') === opened;
            }""",
-        [selector, opened],
+        arg=[selector, opened],
         timeout=timeout,
+    )
+    page.wait_for_selector(
+        selector, state="visible" if opened else "hidden", timeout=timeout
     )
 
 
@@ -428,6 +442,14 @@ def open_detail(page, name, *, touch=False, attempts=2):
     """Open the detail popup for *name* (view button first, row as fallback)."""
     last = None
     for _ in range(attempts):
+        # A popup left open by an earlier attempt would swallow the next tap.
+        if modal_open(page, "#detail-modal"):
+            page.keyboard.press("Escape")
+            try:
+                wait_modal(page, "#detail-modal", opened=False, timeout=5000)
+            except Exception:  # noqa: BLE001 - fall through and try again
+                pass
+
         entry = entry_locator(page, name)
         targets = []
         view = entry.locator('[data-action="view"]')
@@ -440,11 +462,19 @@ def open_detail(page, name, *, touch=False, attempts=2):
                     target.tap()
                 else:
                     target.click()
-                wait_modal(page, "#detail-modal", opened=True, timeout=5000)
-                actual = page.locator("#detail-name").inner_text().strip()
-                assert actual == name, f'detail popup shows "{actual}", expected "{name}"'
-                return entry
-            except Exception as exc:  # noqa: BLE001 - one more attempt below
+            except Exception as exc:  # noqa: BLE001 - try the next target
                 last = exc
+                continue
+            try:
+                wait_modal(page, "#detail-modal", opened=True, timeout=5000)
+            except Exception as exc:  # noqa: BLE001 - this target did not open it
+                last = exc
+                continue
+            actual = page.locator("#detail-name").inner_text().strip()
+            if actual != name:
+                raise AssertionError(
+                    f'detail popup shows "{actual}", expected "{name}"'
+                )
+            return entry
         time.sleep(0.75)
     raise AssertionError(f'could not open the detail popup for "{name}": {last}')

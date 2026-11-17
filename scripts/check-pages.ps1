@@ -43,6 +43,9 @@ function Check-Page {
 }
 
 Check-Page '/' 'contact-grid'
+Check-Page '/welcome' 'Get started'
+Check-Page '/login' 'auth-form'
+Check-Page '/signup' 'auth-form'
 Check-Page '/favorites' 'panel-favorites|Favorites'
 Check-Page '/groups' 'panel-groups|Groups'
 Check-Page '/settings' 'storage-value'

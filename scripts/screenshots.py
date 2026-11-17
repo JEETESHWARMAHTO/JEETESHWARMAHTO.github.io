@@ -17,7 +17,16 @@ VIEWPORTS = [
     ("mobile", 390, 844),
 ]
 
-ROUTES = ["/", "/favorites", "/groups", "/settings"]
+ROUTES = ["/", "/welcome", "/login", "/signup", "/favorites", "/groups", "/settings"]
+
+# Skip the intro splash and the first-visit welcome redirect so every capture
+# shows the page itself, deterministically.
+INIT_SCRIPT = """
+try {
+  sessionStorage.setItem('cb-intro', '1');
+  localStorage.setItem('cb-seen-welcome', '1');
+} catch (e) {}
+"""
 
 
 def main() -> int:
@@ -34,6 +43,7 @@ def main() -> int:
         browser = pw.chromium.launch(headless=True)
         for name, width, height in VIEWPORTS:
             page = browser.new_page(viewport={"width": width, "height": height}, device_scale_factor=2)
+            page.add_init_script(INIT_SCRIPT)
             page.on("console", lambda m: errors.append(f"{m.type}: {m.text}") if m.type == "error" else None)
             page.on("pageerror", lambda e: errors.append(f"pageerror: {e}"))
 

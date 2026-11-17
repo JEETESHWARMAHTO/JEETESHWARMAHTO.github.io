@@ -7,7 +7,7 @@ delete lifecycle using a uniquely named contact that is removed on teardown.
 
 import urllib.parse
 
-from conftest import api, http
+from conftest import http
 
 
 def test_health_reports_storage(base_url):
@@ -92,4 +92,3 @@ def test_read_of_missing_contact_is_404(base_url):
 def test_create_rejects_an_empty_name(base_url):
     status, body = http("POST", "/api/contacts", {"name": ""})
     assert status in (400, 422), f"creating a contact without a name returned HTTP {status}"
-    assert api  # keeps the imported helper referenced for readability
