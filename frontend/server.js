@@ -36,6 +36,7 @@ const MIME = {
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
   '.ico': 'image/x-icon',
+  '.webmanifest': 'application/manifest+json',
   '.woff2': 'font/woff2',
   '.map': 'application/json',
 };
@@ -127,6 +128,33 @@ const PAGE_ROUTES = {
     modals: false,
     fab: false,
   },
+  '/welcome': {
+    file: 'welcome.html',
+    title: 'Welcome - Contact Book',
+    page: 'welcome',
+    script: '',
+    modals: false,
+    fab: false,
+    bare: true,
+  },
+  '/login': {
+    file: 'login.html',
+    title: 'Sign in - Contact Book',
+    page: 'login',
+    script: '',
+    modals: false,
+    fab: false,
+    bare: true,
+  },
+  '/signup': {
+    file: 'signup.html',
+    title: 'Create account - Contact Book',
+    page: 'signup',
+    script: '',
+    modals: false,
+    fab: false,
+    bare: true,
+  },
 };
 PAGE_ROUTES['/index.html'] = PAGE_ROUTES['/'];
 
@@ -142,10 +170,10 @@ const NOT_FOUND_HTML = `<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Page not found - Contact Book</title>
   <style>
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #070b1a; color: #e9eefc; font-family: system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f7f4ec; color: #1f1d1a; font-family: Inter, system-ui, sans-serif; }
     main { padding: 2rem; text-align: center; }
-    p { color: #9fb0d8; }
-    a { color: #8ab4ff; }
+    p { color: #7a756b; }
+    a { color: #1a73e8; }
   </style>
 </head>
 <body>
@@ -175,11 +203,16 @@ function readTemplate(file) {
 }
 
 function renderPage(route) {
+  const bare = Boolean(route.bare);
   const layout = readTemplate(path.join(PUBLIC_DIR, 'layout.html'));
   const header = readTemplate(path.join(PARTIALS_DIR, 'header.html'));
   const navBottom = readTemplate(path.join(PARTIALS_DIR, 'nav-bottom.html'));
   const content = readTemplate(path.join(PAGES_DIR, route.file));
   const modals = route.modals ? readTemplate(path.join(PARTIALS_DIR, 'modals.html')) : '';
+
+  // auth.js loads on every page: it attaches the session JWT to /api calls
+  const scripts = ['/js/auth.js'];
+  if (route.script) scripts.push(`/js/${route.script}`);
 
   const values = {
     title: route.title || 'Contact Book',
@@ -187,15 +220,20 @@ function renderPage(route) {
     content,
     modals,
     fab: route.fab ? FAB_SLOT : '',
-    page_script: route.script ? `<script src="/js/${route.script}" defer></script>` : '',
+    page_script: scripts.map((src) => `<script src="${src}" defer></script>`).join('\n  '),
     head_extra: route.headExtra || '',
   };
 
   let html = layout.replace(/\{\{([a-z_]+)\}\}/g, (match, name) =>
     Object.prototype.hasOwnProperty.call(values, name) ? values[name] : match
   );
-  html = html.replace('<!-- include:header -->', () => header);
-  html = html.replace('<!-- include:nav-bottom -->', () => navBottom);
+  if (bare) {
+    // welcome / login / signup: no app header, no bottom nav
+    html = html.replace('<!-- include:header -->', '').replace('<!-- include:nav-bottom -->', '');
+  } else {
+    html = html.replace('<!-- include:header -->', () => header);
+    html = html.replace('<!-- include:nav-bottom -->', () => navBottom);
+  }
 
   return html
     .replace(/\{\{active:([a-z-]+)\}\}/g, (_m, name) => (name === route.page ? 'active' : ''))

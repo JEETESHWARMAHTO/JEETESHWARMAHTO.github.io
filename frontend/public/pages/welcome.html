@@ -1,0 +1,45 @@
+<section class="mt-10 flex flex-col items-center text-center sm:mt-16" aria-label="Welcome">
+  <svg class="h-16 w-16 sm:h-20 sm:w-20" aria-hidden="true"><use href="#logo-mark"></use></svg>
+  <h1 class="font-display mt-6 text-3xl font-bold tracking-tight sm:text-4xl">Contact Book</h1>
+  <p class="mt-3 max-w-lg text-sm leading-relaxed text-ink-dim sm:text-base">
+    Personal contacts, beautifully kept. Add everyone you know, star the ones that
+    matter, group them your way - and keep the list yours with a personal account.
+  </p>
+
+  <div class="mt-8 flex flex-col gap-3 sm:flex-row" data-auth="out">
+    <a href="/signup" class="btn btn-primary justify-center px-7 py-3 text-[15px]">Get started</a>
+    <a href="/login" class="btn justify-center px-7 py-3 text-[15px]">Sign in</a>
+  </div>
+  <div class="hidden flex-col gap-3 sm:flex-row" data-auth="in">
+    <a href="/" class="btn btn-primary justify-center px-7 py-3 text-[15px]">Open my contacts</a>
+    <button class="btn justify-center px-7 py-3 text-[15px]" type="button" data-signout>Sign out</button>
+  </div>
+
+  <div class="mt-12 grid w-full max-w-3xl gap-3 text-left sm:grid-cols-3">
+    <div class="glass rounded-2xl p-4">
+      <span class="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.06] text-brand-2">
+        <svg class="h-5 w-5" aria-hidden="true"><use href="#i-search"></use></svg>
+      </span>
+      <p class="mt-3 text-sm font-semibold">Find anyone fast</p>
+      <p class="mt-1 text-[13px] leading-relaxed text-ink-dim">Search names, numbers, companies and notes as you type.</p>
+    </div>
+    <div class="glass rounded-2xl p-4">
+      <span class="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.06] text-brand-2">
+        <svg class="h-5 w-5" aria-hidden="true"><use href="#i-star"></use></svg>
+      </span>
+      <p class="mt-3 text-sm font-semibold">Star your favorites</p>
+      <p class="mt-1 text-[13px] leading-relaxed text-ink-dim">One tap keeps the people you call most right at the top.</p>
+    </div>
+    <div class="glass rounded-2xl p-4">
+      <span class="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.06] text-brand-2">
+        <svg class="h-5 w-5" aria-hidden="true"><use href="#i-grid"></use></svg>
+      </span>
+      <p class="mt-3 text-sm font-semibold">Group them your way</p>
+      <p class="mt-1 text-[13px] leading-relaxed text-ink-dim">Family, work, clients - label once, filter in a tap.</p>
+    </div>
+  </div>
+
+  <p class="mt-10 text-[13px] text-ink-dim">
+    Just browsing? <a href="/" class="text-btn">Open the demo contacts</a>
+  </p>
+</section>
