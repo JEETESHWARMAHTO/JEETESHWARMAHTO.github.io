@@ -5,8 +5,9 @@
  * ------------------------------------------------------------
  * Vanilla WebGL port of the @paper-design/shaders MeshGradient
  * look (21st.dev "paper-design-shader-background"): flowing
- * 4-color mesh gradient + animated paper grain, darkened to sit
- * behind the glassmorphism UI. Also drives the intro splash.
+ * 4-color pastel mesh + animated paper grain, kept light and
+ * warm so it washes gently under the glassmorphism UI. Also
+ * drives the intro splash.
  *
  * Layer order: #bg-shader canvas -> orbs -> glass UI -> modals
  * ============================================================ */
@@ -123,23 +124,23 @@
       );
       float n = fbm(pr * 1.6 + u_distortion * r);
 
-      // mix the four mesh colors (indigo / violet / cyan / rose)
+      // mix the four mesh colors (apricot / blush / cream-gold / peach)
       vec3 col = mix(u_c1, u_c2, smoothstep(0.12, 0.82, n + (q.x - 0.5) * 0.8));
       col = mix(col, u_c3, smoothstep(0.25, 0.9, r.y) * 0.85);
       col = mix(col, u_c4,
         smoothstep(0.35, 0.95, sin(q.y * 3.2 + n * 4.0 + t * 0.7) * 0.5 + 0.5) * 0.5);
 
-      // keep it deep so glass panels + text stay readable
-      col = mix(vec3(0.027, 0.043, 0.102), col * 0.66, 0.88);
+      // settle on warm cream so glass panels + text stay readable
+      col = mix(vec3(0.992, 0.988, 0.976), col * 0.9, 0.55);
 
       // animated paper grain (the "paper design" signature)
       float g = hash(gl_FragCoord.xy
         + vec2(fract(u_time * 7.0) * 137.0, fract(u_time * 5.0) * 91.0)) - 0.5;
-      col += g * 0.055;
+      col += g * 0.045;
 
-      // vignette
+      // vignette (light - only a whisper at the corners)
       float vig = smoothstep(1.25, 0.35, length(v_uv - 0.5) * 1.55);
-      col *= mix(0.7, 1.0, vig);
+      col *= mix(0.93, 1.0, vig);
 
       gl_FragColor = vec4(col, 1.0);
     }
@@ -192,10 +193,10 @@
   gl.uniform1f(U('u_speed'), 0.22); // paper-design speed
   gl.uniform1f(U('u_distortion'), 1.0); // paper-design distortion
   gl.uniform1f(U('u_swirl'), 0.8); // paper-design swirl
-  gl.uniform3f(U('u_c1'), 0.357, 0.486, 1.0); // indigo  #5b7cff
-  gl.uniform3f(U('u_c2'), 0.655, 0.545, 0.98); // violet  #a78bfa
-  gl.uniform3f(U('u_c3'), 0.024, 0.714, 0.831); // cyan    #06b6d4
-  gl.uniform3f(U('u_c4'), 0.957, 0.447, 0.714); // rose    #f472b6
+  gl.uniform3f(U('u_c1'), 1.0, 0.863, 0.682); // apricot     #ffdcae
+  gl.uniform3f(U('u_c2'), 1.0, 0.851, 0.878); // blush       #ffd9e0
+  gl.uniform3f(U('u_c3'), 0.969, 0.914, 0.769); // cream-gold  #f7e9c4
+  gl.uniform3f(U('u_c4'), 0.957, 0.769, 0.659); // peach       #f4c4a8
 
   /* ---------------- sizing (DPR capped for perf) ---------------- */
   function resize() {

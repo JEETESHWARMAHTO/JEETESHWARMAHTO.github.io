@@ -136,6 +136,42 @@
     }
   }
 
+  /* ------------------------------------------------------------------ install */
+  let installPrompt = null;
+
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+  }
+
+  function isIOS() {
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
+      (/macintosh/i.test(window.navigator.userAgent) && window.navigator.maxTouchPoints > 1);
+  }
+
+  async function installApp() {
+    if (isStandalone()) {
+      toast('Contact Book is already installed');
+      return;
+    }
+    if (installPrompt) {
+      try {
+        await installPrompt.prompt();
+        const choice = await installPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') toast('Installing Contact Book...');
+        installPrompt = null;
+      } catch {
+        /* user dismissed the prompt; nothing to do */
+      }
+      return;
+    }
+    if (isIOS()) {
+      toast('On iPhone/iPad: tap Share, then Add to Home Screen');
+      return;
+    }
+    toast('Use your browser menu and choose Install app', 'warn');
+  }
+
   /* ------------------------------------------------------------------ boot */
   document.addEventListener('DOMContentLoaded', () => {
     paintButton();
@@ -143,6 +179,16 @@
 
     const btn = $('#google-signin');
     if (btn) btn.addEventListener('click', () => (session ? signOut() : signIn()));
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      installPrompt = event;
+      const hint = $('#install-hint');
+      if (hint) hint.textContent = 'Ready to install - add Contact Book to your home screen';
+    });
+
+    const installBtn = $('#install-app');
+    if (installBtn) installBtn.addEventListener('click', installApp);
 
     (async () => {
       try {

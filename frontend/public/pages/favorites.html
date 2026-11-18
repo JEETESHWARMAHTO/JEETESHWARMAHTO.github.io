@@ -1,15 +1,74 @@
 <section id="panel-favorites" class="mt-5" aria-label="Favorites">
-  <div class="glass mx-auto max-w-xl rounded-2xl px-6 py-10 text-center">
-    <div class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-white/10 bg-white/5 text-brand-2">
+  <div class="mt-4">
+    <h1 class="font-display text-base font-bold tracking-tight sm:text-xl">Favorites</h1>
+    <p id="result-hint" class="mt-0.5 text-[13px] text-ink-dim">Loading your favorites...</p>
+  </div>
+
+  <div id="loading" class="mt-4 hidden grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3 xl:grid-cols-4">
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+    <div class="skeleton h-16 sm:h-36 sm:rounded-xl"></div>
+  </div>
+
+  <main id="contact-grid" class="mt-4 hidden grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3 lg:gap-4 xl:grid-cols-4 [perspective:1200px]" aria-live="polite"></main>
+
+  <div id="empty-state" class="glass mt-4 hidden rounded-2xl px-6 py-10 text-center">
+    <div class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-line bg-white/70 text-brand-2">
       <svg class="h-7 w-7"><use href="#i-star"></use></svg>
     </div>
-    <div class="mt-4 flex items-center justify-center gap-3">
-      <h2 class="font-display text-base font-bold">Favorites</h2>
-      <span class="badge-so">Soon</span>
+    <h2 id="empty-title" class="font-display mt-4 text-base font-bold">No favorites yet</h2>
+    <p id="empty-text" class="mx-auto mt-1.5 max-w-md text-sm text-ink-dim">No favorites yet - star a contact to keep them here.</p>
+    <a id="empty-action" class="btn btn-primary mt-5" href="/">Browse contacts</a>
+  </div>
+
+  <!-- detail popup (this route renders without the shared modals partial) -->
+  <div id="detail-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="detail-name">
+    <div class="modal-panel glass-strong my-auto w-full max-w-lg overflow-hidden rounded-2xl">
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#1a73e8]/15 to-transparent"></div>
+        <div class="relative flex items-start gap-4 p-4 sm:p-5">
+          <div id="detail-avatar" class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-white/70 text-xl font-bold text-ink"></div>
+          <div class="min-w-0 flex-1">
+            <h2 id="detail-name" class="font-display truncate text-lg font-bold sm:text-xl">-</h2>
+            <p id="detail-company" class="truncate text-sm text-ink-dim">-</p>
+          </div>
+          <button class="icon-btn" data-close="detail" aria-label="Close">
+            <svg class="h-4 w-4"><use href="#i-x"></use></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="detail-body" class="space-y-2.5 p-4 sm:p-5"></div>
+
+      <div class="flex flex-wrap gap-2 px-4 pb-4 sm:px-5 sm:pb-5">
+        <button id="detail-edit" class="btn flex-1">
+          <svg class="h-4 w-4"><use href="#i-pencil"></use></svg>
+          Edit
+        </button>
+        <button id="detail-delete" class="btn btn-danger flex-1">
+          <svg class="h-4 w-4"><use href="#i-trash"></use></svg>
+          Delete
+        </button>
+        <button class="btn" data-close="detail">Close</button>
+      </div>
     </div>
-    <p class="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink-dim">
-      The people you reach for most, pinned to the top. Favorites sync
-      across devices once Google sign-in is connected.
-    </p>
+  </div>
+
+  <!-- delete confirmation -->
+  <div id="confirm-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal-panel glass-strong my-auto w-full max-w-sm rounded-2xl p-5 text-center">
+      <div class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger/15 text-danger">
+        <svg class="h-6 w-6"><use href="#i-alert"></use></svg>
+      </div>
+      <h2 id="confirm-title" class="font-display mt-4 text-base font-bold">Delete contact?</h2>
+      <p id="confirm-message" class="mt-1.5 text-sm text-ink-dim">This can't be undone.</p>
+      <div class="mt-4 flex gap-2.5">
+        <button id="confirm-no" class="btn flex-1">Cancel</button>
+        <button id="confirm-yes" class="btn btn-danger flex-1">Delete</button>
+      </div>
+    </div>
   </div>
 </section>
+
+<script src="/js/favorites.js" defer></script>

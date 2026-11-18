@@ -10,8 +10,9 @@
   --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* warm cream page, warm near-black ink (Google Contacts spirit) */
-  --color-ink: #1f1d1a;
-  --color-ink-dim: #6e6a61; /* muted secondary - AA on cream (4.9:1) */
+  --color-ink: #1f1d1a; /* primary text - 15.9:1 on cream */
+  --color-ink-dim: #4a4740; /* secondary text - 8.4:1 on cream */
+  --color-ink-muted: #7a756b; /* muted: placeholders, meta, disabled */
   --color-surface: #f7f4ec;
 
   /* ONE accent: Google blue. brand = fills, brand-2 = blue TEXT (4.9:1) */
@@ -139,6 +140,21 @@
     outline-offset: 2px;
   }
 
+  /* star toggle in an entry footer: pressed state reads as filled blue */
+  .btn[aria-pressed="true"] {
+    color: var(--color-brand-2);
+    background: rgba(26, 115, 232, 0.07);
+    border-color: rgba(26, 115, 232, 0.4);
+  }
+  .btn[aria-pressed="true"]:hover {
+    color: var(--color-brand-2);
+    background: rgba(26, 115, 232, 0.12);
+    border-color: rgba(26, 115, 232, 0.55);
+  }
+  .btn[aria-pressed="true"] path {
+    fill: currentColor;
+  }
+
   .btn-primary {
     color: #fff;
     background: var(--color-brand);
@@ -199,8 +215,8 @@
       box-shadow 0.2s ease;
   }
   .input::placeholder {
-    color: #6e6a61;
-    opacity: 0.9;
+    color: var(--color-ink-muted);
+    opacity: 1;
   }
   .input:hover {
     border-color: rgba(31, 29, 26, 0.22);
@@ -822,8 +838,8 @@
       visibility 0s linear 0.4s;
   }
   .search-field::placeholder {
-    color: #6e6a61;
-    opacity: 0.9;
+    color: var(--color-ink-muted);
+    opacity: 1;
   }
   .search-shell.open .search-field {
     opacity: 1;
@@ -1200,6 +1216,17 @@ body.shader-ready #bg-shader {
 
 .toast {
   animation: toast-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* auth.js paints the settings account card with utility colours from the
+   old dark theme; restated unlayered (beats the utilities layer) so the
+   card reads as glass on the cream page */
+#account-slot > div {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(31, 29, 26, 0.08);
+  box-shadow: 0 1px 2px rgba(31, 29, 26, 0.06);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
 }
 
 /* ------------------------------------------------------------------ motion safety */

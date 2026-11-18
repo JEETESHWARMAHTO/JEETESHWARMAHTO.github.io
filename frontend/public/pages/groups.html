@@ -1,15 +1,29 @@
 <section id="panel-groups" class="mt-5" aria-label="Groups">
-  <div class="glass mx-auto max-w-xl rounded-2xl px-6 py-10 text-center">
-    <div class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-white/10 bg-white/5 text-brand-2">
+  <div class="mt-4">
+    <h1 class="font-display text-base font-bold tracking-tight sm:text-xl">Groups</h1>
+    <p id="groups-hint" class="mt-0.5 text-[13px] text-ink-dim">Loading your groups...</p>
+  </div>
+
+  <div id="groups-loading" class="mt-4 hidden flex flex-wrap gap-2.5" aria-hidden="true">
+    <div class="skeleton h-9 w-24 rounded-full"></div>
+    <div class="skeleton h-9 w-28 rounded-full"></div>
+    <div class="skeleton h-9 w-20 rounded-full"></div>
+    <div class="skeleton h-9 w-32 rounded-full"></div>
+  </div>
+
+  <div id="group-chips" class="mt-4 hidden flex flex-wrap gap-2.5" aria-live="polite"></div>
+
+  <div id="groups-empty" class="glass mx-auto mt-4 hidden max-w-xl rounded-2xl px-6 py-10 text-center">
+    <div class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-line bg-white/70 text-brand-2">
       <svg class="h-7 w-7"><use href="#i-grid"></use></svg>
     </div>
-    <div class="mt-4 flex items-center justify-center gap-3">
-      <h2 class="font-display text-base font-bold">Groups</h2>
-      <span class="badge-so">Soon</span>
-    </div>
-    <p class="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink-dim">
-      Organize contacts into lists like Family, Work or Clients.
-      Groups are stored with your contacts and stay in sync.
+    <h2 class="font-display mt-4 text-base font-bold">No groups yet</h2>
+    <p class="mx-auto mt-1.5 max-w-md text-sm text-ink-dim">
+      Add a group when you create or edit a contact - Family, Work, Clients -
+      and every label shows up here with its count.
     </p>
+    <a class="btn btn-primary mt-5" href="/">Browse contacts</a>
   </div>
 </section>
+
+<script src="/js/groups.js" defer></script>

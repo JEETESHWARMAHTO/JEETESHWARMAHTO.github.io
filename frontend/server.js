@@ -464,4 +464,10 @@ function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-boot();
+// Required as a module by scripts/build-static.js (the GitHub Pages export);
+// started directly (node server.js / npm run dev) it boots the dev server.
+module.exports = { renderPage, PAGE_ROUTES };
+
+if (require.main === module) {
+  boot();
+}

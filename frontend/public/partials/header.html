@@ -35,12 +35,13 @@
       <svg class="h-3 w-3" aria-hidden="true"><use href="#i-x"></use></svg>
     </button>
   </div>
+  <div id="auth-slot" class="ml-1 flex shrink-0 items-center gap-2"></div>
 </header>
 
-<div id="api-banner" class="hidden mt-4 items-start gap-3 rounded-2xl border border-amber-300/30 bg-amber-400/10 px-4 py-3 backdrop-blur-md">
-  <span class="mt-0.5 text-amber-300"><svg class="h-4 w-4"><use href="#i-alert"></use></svg></span>
-  <div class="text-sm text-amber-100">
+<div id="api-banner" class="hidden mt-4 items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-100/80 px-4 py-3 backdrop-blur-md">
+  <span class="mt-0.5 text-amber-700"><svg class="h-4 w-4"><use href="#i-alert"></use></svg></span>
+  <div class="text-sm text-amber-900">
     <p class="font-semibold">Python API offline</p>
-    <p id="api-banner-text" class="text-amber-100/80 text-[13px]">Start it with <code class="rounded bg-black/30 px-1.5 py-0.5">python -m uvicorn app:app --reload --port 8000</code></p>
+    <p id="api-banner-text" class="text-amber-900/80 text-[13px]">Start it with <code class="rounded bg-amber-900/10 px-1.5 py-0.5">python -m uvicorn app:app --reload --port 8000</code></p>
   </div>
 </div>

@@ -17,6 +17,12 @@
   <div class="mt-5">
     <h1 class="font-display text-base font-bold tracking-tight sm:text-xl">Contacts</h1>
     <p id="result-hint" class="mt-0.5 text-[13px] text-ink-dim">Loading your book...</p>
+    <div id="group-filter" class="group-filter mt-2 hidden">
+      <span>Group <strong id="group-filter-name">-</strong></span>
+      <button type="button" id="group-filter-clear" aria-label="Clear group filter">
+        <svg class="h-3.5 w-3.5" aria-hidden="true"><use href="#i-x"></use></svg>
+      </button>
+    </div>
   </div>
 
   <div id="loading" class="mt-4 hidden grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3 xl:grid-cols-4">
@@ -29,7 +35,7 @@
   <main id="contact-grid" class="mt-4 hidden grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3 lg:gap-4 xl:grid-cols-4 [perspective:1200px]" aria-live="polite"></main>
 
   <div id="empty-state" class="glass mt-4 hidden rounded-2xl px-6 py-10 text-center">
-    <div class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-white/10 bg-white/5 text-brand-2">
+    <div class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-line bg-white/70 text-brand-2">
       <svg class="h-7 w-7"><use href="#i-users"></use></svg>
     </div>
     <h2 id="empty-title" class="font-display mt-4 text-base font-bold">No contacts yet</h2>

@@ -47,6 +47,18 @@
         <label class="label" for="f-address">Address</label>
         <input class="input" id="f-address" name="address" maxlength="240" placeholder="City, country" />
       </div>
+      <div>
+        <label class="label" for="f-group">Group</label>
+        <input class="input" id="f-group" name="group" list="group-list" maxlength="60" placeholder="e.g. Family" autocomplete="off" />
+        <datalist id="group-list"></datalist>
+      </div>
+      <div class="flex items-end pb-1.5">
+        <label class="fav-toggle" for="f-favorite">
+          <svg class="h-4 w-4" aria-hidden="true"><use href="#i-star"></use></svg>
+          Favorite
+          <input type="checkbox" id="f-favorite" name="favorite" />
+        </label>
+      </div>
       <div class="sm:col-span-2">
         <label class="label" for="f-notes">Notes</label>
         <textarea class="input resize-none" id="f-notes" name="notes" rows="3" maxlength="1000" placeholder="How you met, preferences..."></textarea>
@@ -66,7 +78,7 @@
     <div class="relative">
       <div class="absolute inset-0 bg-gradient-to-br from-[#1a73e8]/15 to-transparent"></div>
       <div class="relative flex items-start gap-4 p-4 sm:p-5">
-        <div id="detail-avatar" class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-white/10 text-xl font-bold text-white"></div>
+        <div id="detail-avatar" class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-white/70 text-xl font-bold text-ink"></div>
         <div class="min-w-0 flex-1">
           <h2 id="detail-name" class="font-display truncate text-lg font-bold sm:text-xl">-</h2>
           <p id="detail-company" class="truncate text-sm text-ink-dim">-</p>
