@@ -22,6 +22,196 @@
     '/api/auth/logout',
   ];
 
+  /* Static hosting has no Python proxy: serve /api/* straight from Supabase.
+   * Injected by scripts/build-static.js as window.__CB_HOSTED__. */
+  const HOSTED = window.__CB_HOSTED__ || null;
+  const SB = HOSTED ? String(HOSTED.supabaseUrl).replace(/\/+$/, '') : '';
+  const ANON = HOSTED ? HOSTED.supabaseAnonKey : '';
+  const REST = SB + '/rest/v1';
+  const GOTRUE = SB + '/auth/v1';
+  const SEARCH_COLS = ['name', 'phone', 'email', 'company', 'address', 'notes'];
+
+  function jsonRes(status, body) {
+    return new Response(body === null || body === undefined ? null : JSON.stringify(body), {
+      status,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async function authCall(method, path, body, bearer) {
+    const headers = { apikey: ANON, 'Content-Type': 'application/json' };
+    if (bearer) headers.Authorization = 'Bearer ' + bearer;
+    const res = await origFetch(GOTRUE + path, {
+      method, headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch (_) { data = text; }
+    return { status: res.status, data, ok: res.ok };
+  }
+
+  function authErr(status, data, fallback) {
+    const msg = String((data && (data.msg || data.error_description)) || '').toLowerCase();
+    const code = String((data && (data.error_code || data.code)) || '');
+    if (code === 'user_already_exists' || msg.includes('already registered'))
+      return jsonRes(409, { detail: 'An account with that email already exists' });
+    if (code === 'invalid_credentials' || msg.includes('invalid login credentials'))
+      return jsonRes(401, { detail: 'Email or password is incorrect' });
+    if (code === 'weak_password' || msg.includes('password should be at least'))
+      return jsonRes(400, { detail: 'Password must be at least 8 characters' });
+    if (status >= 500) return jsonRes(502, { detail: 'Authentication service error, try again' });
+    return jsonRes(400, { detail: fallback });
+  }
+
+  function sessionFields(d) {
+    return {
+      access_token: d.access_token,
+      refresh_token: d.refresh_token,
+      expires_in: d.expires_in,
+      user: d.user,
+    };
+  }
+
+  async function restCall(method, path, body, extra) {
+    const headers = {
+      apikey: ANON,
+      Authorization: 'Bearer ' + (session ? session.access_token : ANON),
+      'Content-Type': 'application/json',
+      ...(extra || {}),
+    };
+    const res = await origFetch(REST + path, {
+      method, headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch (_) { data = text; }
+    return { status: res.status, data, ok: res.ok, headers: res.headers };
+  }
+
+  function restErr(r) {
+    let detail = 'Request failed';
+    if (r.data && typeof r.data === 'object')
+      detail = r.data.message || r.data.hint || r.data.details || detail;
+    else if (typeof r.data === 'string' && r.data) detail = r.data;
+    if (r.status === 401) detail = 'Sign in again to continue';
+    return jsonRes(r.status, { detail });
+  }
+
+  async function hostedApi(url, opts) {
+    const u = new URL(url, location.origin);
+    const path = u.pathname;
+    const method = (opts.method || 'GET').toUpperCase();
+    let body;
+    try { body = opts.body ? JSON.parse(opts.body) : undefined; } catch (_) { body = opts.body; }
+
+    if (path.startsWith('/api/auth/')) {
+      const name = path.slice('/api/auth/'.length);
+      if (name === 'signup') {
+        const r = await authCall('POST', '/signup', { email: body.email, password: body.password });
+        if (!r.ok) return authErr(r.status, r.data, 'Could not create the account');
+        if (r.data && r.data.access_token)
+          return jsonRes(200, { user: r.data.user, session: sessionFields(r.data) });
+        return jsonRes(200, { user: r.data, session: null });
+      }
+      if (name === 'login') {
+        const r = await authCall('POST', '/token?grant_type=password', { email: body.email, password: body.password });
+        if (!r.ok) return authErr(r.status, r.data, 'Could not sign in');
+        return jsonRes(200, sessionFields(r.data));
+      }
+      if (name === 'refresh') {
+        const r = await authCall('POST', '/token?grant_type=refresh_token', { refresh_token: body.refresh_token });
+        if (!r.ok) return jsonRes(401, { detail: 'Session expired, sign in again' });
+        return jsonRes(200, sessionFields(r.data));
+      }
+      if (name === 'logout') return jsonRes(200, { ok: true });
+      if (name === 'user') {
+        const r = await authCall('GET', '/user', undefined, session && session.access_token);
+        if (!r.ok || !r.data || !r.data.id) return jsonRes(401, { detail: 'Sign in again to continue' });
+        return jsonRes(200, { id: r.data.id, email: r.data.email, created_at: r.data.created_at });
+      }
+      return jsonRes(404, { detail: 'Not found' });
+    }
+
+    if (path === '/api/health') {
+      const r = await restCall('GET', '/contacts?select=id&limit=1', undefined, { Prefer: 'count=exact' });
+      if (!r.ok) return restErr(r);
+      const cr = String(r.headers.get('content-range') || '');
+      const total = parseInt(cr.split('/').pop(), 10) || 0;
+      return jsonRes(200, { status: 'ok', service: 'contact-book-api', storage: 'supabase (postgres)', contacts: total });
+    }
+    if (path === '/api/config') {
+      return jsonRes(200, {
+        supabaseUrl: SB, supabaseAnonKey: ANON, authEnabled: true,
+        provider: 'google', storage: 'supabase (postgres)',
+      });
+    }
+    if (path === '/api/contacts/favorites') {
+      const r = await restCall('GET', '/contacts?select=*&favorite=eq.true&order=name.asc');
+      return r.ok ? jsonRes(200, r.data || []) : restErr(r);
+    }
+    if (path === '/api/contacts/groups') {
+      const r = await restCall('GET', '/contacts?select=group');
+      if (!r.ok) return restErr(r);
+      const counts = {};
+      (r.data || []).forEach((row) => {
+        const g = row.group || '';
+        counts[g] = (counts[g] || 0) + 1;
+      });
+      const list = Object.keys(counts)
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .map((g) => ({ group: g === '' ? 'Ungrouped' : g, count: counts[g] }));
+      return jsonRes(200, list);
+    }
+    if (path === '/api/contacts') {
+      if (method === 'POST') {
+        const payload = { ...(body || {}) };
+        if (session && session.user && session.user.id) payload.user_id = session.user.id;
+        const r = await restCall('POST', '/contacts?select=*', payload, { Prefer: 'return=representation' });
+        if (!r.ok) return restErr(r);
+        return jsonRes(201, Array.isArray(r.data) ? r.data[0] : r.data);
+      }
+      const params = ['select=*'];
+      const q = (u.searchParams.get('q') || '').trim();
+      if (q) {
+        const like = encodeURIComponent('*' + q + '*');
+        params.push('or=(' + SEARCH_COLS.map((c) => `${c}.ilike.${like}`).join(',') + ')');
+      }
+      const fav = u.searchParams.get('favorite');
+      if (fav === 'true' || fav === 'false') params.push('favorite=eq.' + fav);
+      const group = u.searchParams.get('group');
+      if (group !== null) params.push('group=eq.' + encodeURIComponent(group === 'Ungrouped' ? '' : group));
+      params.push('order=name.asc');
+      const r = await restCall('GET', '/contacts?' + params.join('&'));
+      return r.ok ? jsonRes(200, r.data || []) : restErr(r);
+    }
+    const one = path.match(/^\/api\/contacts\/(\d+)$/);
+    if (one) {
+      const id = one[1];
+      if (method === 'GET') {
+        const r = await restCall('GET', `/contacts?select=*&id=eq.${id}`);
+        if (!r.ok) return restErr(r);
+        if (!Array.isArray(r.data) || !r.data.length) return jsonRes(404, { detail: 'Contact not found' });
+        return jsonRes(200, r.data[0]);
+      }
+      if (method === 'PUT') {
+        const payload = { ...(body || {}), updated_at: new Date().toISOString() };
+        const r = await restCall('PATCH', `/contacts?id=eq.${id}&select=*`, payload, { Prefer: 'return=representation' });
+        if (!r.ok) return restErr(r);
+        if (!Array.isArray(r.data) || !r.data.length) return jsonRes(404, { detail: 'Contact not found' });
+        return jsonRes(200, r.data[0]);
+      }
+      if (method === 'DELETE') {
+        const r = await restCall('DELETE', `/contacts?id=eq.${id}&select=id`, undefined, { Prefer: 'return=representation' });
+        if (!r.ok) return restErr(r);
+        if (!Array.isArray(r.data) || !r.data.length) return jsonRes(404, { detail: 'Contact not found' });
+        return jsonRes(204, null);
+      }
+    }
+    return jsonRes(404, { detail: 'Not found' });
+  }
+
   /* ------------------------------------------------------------ session */
   function load() {
     try {
@@ -87,9 +277,11 @@
     const skip = SKIP_REFRESH.some((p) => url.startsWith(p));
     let opts = init || {};
 
-    if (isApi && !skip && session) opts = withAuth(opts, session.access_token);
+    if (isApi && !skip && session && !HOSTED) opts = withAuth(opts, session.access_token);
 
-    let res = await origFetch(input, opts);
+    const send = () => (HOSTED && isApi ? hostedApi(url, opts) : origFetch(input, opts));
+
+    let res = await send();
 
     if (res.status === 401 && isApi && !skip && session) {
       const body = await res.clone().json().catch(() => null);
@@ -97,7 +289,7 @@
       if (/sign in again|expired/i.test(detail)) {
         if (await refresh()) {
           opts = withAuth(opts, session.access_token);
-          res = await origFetch(input, opts);
+          res = await send();
         } else {
           clear();
           render();
@@ -111,7 +303,7 @@
 
   /* ------------------------------------------------------------ auth API */
   async function post(path, payload) {
-    const res = await origFetch('/api/auth' + path, {
+    const res = await fetch('/api/auth' + path, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
